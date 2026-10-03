@@ -1,36 +1,20 @@
 package com.example.demo.Repository;
 
-import com.example.demo.DTP.StudentDto;
 import com.example.demo.Entity.StudentEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-
-import static com.example.demo.utils.Mapping.entityToDto;
+import java.util.List;
 
 @Repository
-public class StudentRepo {
-    private final AtomicInteger idCounter = new AtomicInteger(0);
+public interface StudentRepo extends JpaRepository<StudentEntity, Long> {
 
-    Map<Integer, StudentEntity> studentDb = new HashMap<>();
-    public boolean save(StudentEntity st)
-    {
 
-//      studentDto.setId(idCounter.incrementAndGet());
+    long deleteByName(String name);
 
-        studentDb.put(idCounter.incrementAndGet(),st);
-        return true;
-    }
-
-    public StudentDto get( Integer id)
-    {
-      StudentEntity getStudent = studentDb.get(id);
-
-      StudentDto sta = entityToDto(getStudent);
-
-      return sta;
-    }
+    @Query("SELECT s FROM StudentEntity s WHERE s.course = :course AND s.age >= :minAge ORDER BY s.name")
+    List<StudentEntity> findByCourseAndMinAge(@Param("course") String course, @Param("minAge") Integer minAge);
 }
